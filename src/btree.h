@@ -19,27 +19,35 @@ struct node
 };
 
 // AVL Tree
-int avl_height(node *root) {
+inline int avl_height(node *root) {
     return root ? root->ht : -1;
 }
-int avl_factor(node *root) {
+inline int avl_factor(node *root) {
     if (!root)
         return 0;
     return avl_height(root->left) - avl_height(root->right);
 }
-void avl_update_height(node *root) {
+inline void avl_update_height(node *root) {
     if (!root)
         return;
     root->ht = std::max(avl_height(root->left), avl_height(root->right)) + 1;
 }
 
-node* make_node(int val, int ht = 0) {
+inline node* make_node(int val, int ht = 0) {
     auto n = new node;
     n->ht = ht;
     n->left = nullptr;
     n->right = nullptr;
     n->val = val;
     return n;
+}
+
+inline void avl_free(node *root) {
+    if (root) {
+        avl_free(root->left);
+        avl_free(root->right);
+        delete root;
+    }
 }
 
 node* avl_rotate(node *root, node *parent)
@@ -123,6 +131,16 @@ node* avl_insert(node* root, int val, node *parent = nullptr) {
     if (std::abs(avl_factor(root)) == 2)
         return avl_rotate(root, parent);
     return root;
+}
+
+node* avl_search(node *root, int val) {
+    if (!root)
+        return nullptr;
+    if (val == root->val)
+        return root;
+    if (root->val > val)
+        return avl_search(root->left, val);
+    return avl_search(root->right, val);
 }
 
 }
